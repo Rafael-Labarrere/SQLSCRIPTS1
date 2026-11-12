@@ -28,7 +28,6 @@ WHERE categoria = 'Higiene'
 ORDER BY marca;
 
 /*
-R:
 "Colgate"
 "Dove"
 "Elseve"
@@ -83,7 +82,6 @@ GROUP BY categoria
 ORDER BY COUNT DESC, categoria;
 
 /*
-R:
 "Mercearia"	21
 "Bebidas"	20
 "Higiene"	16
@@ -122,7 +120,7 @@ SELECT cidade, COUNT(*) AS quantidade_clientes
 FROM dim_cliente
 GROUP BY cidade
 HAVING COUNT(*) >= 60
-ORDER BY quantidade_clientes DESC, cidade ASC;
+ORDER BY quantidade_clientes DESC, cidade;
 
 /*
 "Brasília"	245
@@ -151,27 +149,99 @@ WHERE sexo = 'F' and data_nascimento BETWEEN DATE '01/01/1990' AND DATE '31/12/1
 
 -- Questão 13. Quantos clientes têm Ana como primeiro nome? (Atenção: nomes como Analu ou Anabela não contam.)
 
+SELECT COUNT (id_cliente)
+FROM dim_cliente
+WHERE nome_cliente = 'Ana %';
 
+-- R: 11
 
 -- Questão 14. Quantas lojas existem em cada UF? Mostre apenas as UFs com mais de 3 lojas, da maior quantidade para a menor.
 
+SELECT uf, COUNT(*) AS quantidade_lojas
+FROM dim_loja
+GROUP BY uf
+HAVING COUNT(*) > 3
+ORDER BY quantidade_lojas DESC;
 
+/*
+"DF"	56
+"GO"	41
+"MG"	4
+*/
 
 -- Questão 15. Liste o nome, a cidade e a data de inauguração das lojas inauguradas antes de 01/01/2007, da mais antiga para a mais recente.
 
+SELECT nome_loja, cidade, data_inauguracao
+FROM dim_loja
+WHERE data_inauguracao < DATE '01/01/2007'
+ORDER BY data_inauguracao;
 
+/*
+"Bom Dia Cruzeiro"	"Brasília"	"2005-01-20"
+"Bom Dia Jardim Tiradentes"	"Aparecida de Goiânia"	"2005-03-14"
+"Bom Dia Sobradinho I"	"Sobradinho"	"2005-04-15"
+"Bom Dia Aparecida Centro"	"Aparecida de Goiânia"	"2005-06-04"
+"Bom Dia Colônia Agrícola Samambaia"	"Vicente Pires"	"2005-08-07"
+"Bom Dia Octogonal"	"Brasília"	"2005-08-21"
+"Bom Dia Sobradinho II"	"Sobradinho"	"2005-10-15"
+"Bom Dia Samambaia Norte"	"Samambaia"	"2006-04-07"
+"Bom Dia Centro Uberlândia"	"Uberlândia"	"2006-04-12"
+"Bom Dia Pistão Sul"	"Taguatinga"	"2006-08-12"
+"Bom Dia Jardim Goiás"	"Goiânia"	"2006-12-06"
+"Bom Dia Luziânia Centro"	"Luziânia"	"2006-12-07"
+"Bom Dia Taguatinga Centro"	"Taguatinga"	"2006-12-16"
+"Bom Dia P Norte"	"Ceilândia"	"2006-12-20"
+*/
 
 -- Questão 16. Qual foi o faturamento de cada canal de venda em 2025? Ordene do maior faturamento para o menor.
 
+SELECT SUM(valor_total), canal
+FROM fato_vendas
+WHERE data_venda BETWEEN DATE '2025-01-01' AND DATE '2025-12-31'
+GROUP BY canal
+ORDER BY SUM(valor_total) DESC;
 
+/*
+276534.24	"Loja física"
+76340.05	"Aplicativo"
+35376.02	"Site"
+*/
 
 -- Questão 17. Considerando apenas o canal Loja física, mostre, para cada forma de pagamento, a quantidade de linhas de venda e o faturamento. Ordene do maior faturamento para o menor.
 
+SELECT forma_pagamento, COUNT(id_venda) as linhas, SUM(valor_total) as faturamento
+FROM fato_vendas
+WHERE canal = 'Loja física'
+GROUP BY forma_pagamento
+ORDER BY faturamento DESC;
 
+/*
+"Cartão de crédito"	3237	166687.46
+"Cartão de débito"	3222	163300.11
+"Pix"	2684	141486.51
+"Dinheiro"	1627	80073.40
+*/
 
 -- Questão 18. Quais são os 10 produtos (id_produto) com mais unidades vendidas (soma de quantidade)? Ordene da maior soma para a menor; em caso de empate, pelo menor id_produto.
 
+SELECT id_produto, SUM(quantidade) AS unidades_vendidas
+FROM fato_vendas
+GROUP BY id_produto
+ORDER BY unidades_vendidas DESC, id_produto ASC
+LIMIT 10;
 
+/*
+61423.83	28
+29330.01	87
+25056.76	237
+21368.96	85
+19847.10	89
+15962.34	136
+15537.61	140
+14134.37	31
+11325.27	236
+10281.69	88
+*/
 
 -- Questão 19. Quais são as 5 lojas (id_loja) com maior faturamento em 2024? Mostre o id_loja e o faturamento, do maior para o menor.
 
