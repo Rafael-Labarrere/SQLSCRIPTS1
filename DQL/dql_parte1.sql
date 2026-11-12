@@ -49,11 +49,19 @@ R:
 
 -- Questão 05. Qual é o valor médio de valor_total das vendas do canal Aplicativo?
 
+SELECT AVG(valor_total)
+FROM fato_vendas
+WHERE canal = 'Aplicativo';
 
+-- R: 52.2665833630846126
 
 -- Questão 06. Quantos produtos da categoria Bebidas têm preco_tabela acima de R$ 10,00?
 
+SELECT COUNT (id_produto)
+FROM dim_produto
+WHERE preco_tabela > 10;
 
+-- R: 139
 
 -- Questão 07. Mostre o nome, a marca e o preço de tabela do produto mais caro do catálogo. Em caso de empate no preço, traga o primeiro em ordem alfabética de nome.
 
