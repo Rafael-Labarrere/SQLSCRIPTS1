@@ -245,29 +245,124 @@ LIMIT 10;
 
 -- Questão 19. Quais são as 5 lojas (id_loja) com maior faturamento em 2024? Mostre o id_loja e o faturamento, do maior para o menor.
 
+SELECT SUM (valor_total) as faturamento, id_loja
+FROM fato_vendas
+GROUP BY id_loja
+ORDER BY faturamento DESC
+LIMIT 5;
 
+/*
+"faturamento"	"id_loja"
+48725.30	3
+22593.12	49
+22342.40	6
+22323.25	4
+22194.28	17
+*/
 
 -- Questão 20. Quantas linhas de venda cada loja (id_loja) tem? Mostre apenas as lojas com mais de 300 linhas, da maior quantidade para a menor.
 
+SELECT id_loja, COUNT(id_venda) AS linhas
+FROM fato_vendas
+GROUP BY id_loja
+HAVING COUNT(id_venda) > 300
+ORDER BY linhas DESC;
 
+/*
+3	886
+49	476
+11	459
+6	444
+9	440
+4	434
+56	429
+2	420
+17	410
+23	316
+*/
 
 -- Questão 21. Quais clientes (id_cliente) têm 70 ou mais linhas de venda? Mostre o id_cliente e a quantidade, da maior para a menor; em caso de empate, pelo menor id_cliente. Desconsidere as vendas sem cliente.
 
+SELECT id_cliente, COUNT(*) AS linhas
+FROM fato_vendas
+WHERE id_cliente IS NOT NULL
+GROUP BY id_cliente
+HAVING COUNT(*) >= 70
+ORDER BY linhas DESC, id_cliente;
 
+/*
+416	169
+684	135
+9	126
+186	122
+563	113
+323	97
+395	95
+290	81
+501	78
+90	75
+129	75
+198	71
+242	70
+*/
 
 -- Questão 22. Quantas linhas de venda tiveram desconto (maior que zero) e qual foi o valor médio desse desconto? Arredonde a média para 2 casas decimais.
 
+SELECT COUNT(*) AS linhas_com_desconto,
+       ROUND(AVG(desconto), 2) AS desconto_medio
+FROM fato_vendas
+WHERE desconto > 0;
 
+/*
+2653	5.25
+*/
 
 -- Questão 23. Qual foi o menor e o maior valor_total de uma linha de venda em dezembro de 2025?
 
+SELECT MIN(valor_total) AS menor_valor,
+       MAX(valor_total) AS maior_valor
+FROM fato_vendas
+WHERE data_venda BETWEEN DATE '2025-12-01' AND DATE '2025-12-31';
 
+/*
+"menor_valor"	"maior_valor"
+2.67	654.20
+*/
 
 -- Questão 24. Quantas linhas de venda foram registradas no dia 24/12/2025 e qual foi o faturamento desse dia?
 
+SELECT COUNT(*) AS linhas, SUM(valor_total) AS faturamento
+FROM fato_vendas
+WHERE data_venda = DATE '2025-12-24';
 
+/*
+"linhas"	"faturamento"
+24	1281.83
+*/
 
 /* Questão 25. Considerando as vendas do canal Site em 2025 que tiveram desconto, mostre:
    id_venda, o valor bruto (quantidade × preco_unitario), o desconto, o valor_total e o percentual
    de desconto sobre o valor bruto. Ordene do maior percentual para o menor; em caso de empate, pelo
-   menor id_venda. Mostre apenas as 10 primeiras linhas. */
+   menor id_venda. Mostre apenas as 10 primeiras linhas. 
+*/
+
+SELECT id_venda, (quantidade*preco_unitario) AS valor_bruto, desconto, valor_total, 
+(desconto/(quantidade*preco_unitario)*100) AS percentual_desconto
+FROM fato_vendas
+WHERE canal = 'Site' AND data_venda BETWEEN DATE '2025-01-01' AND DATE '2025-12-31' AND desconto > 0
+ORDER BY percentual_desconto DESC, id_venda
+LIMIT 10;
+
+/*
+"id_venda"	"valor_bruto"	"desconto"	"valor_total"	"percentual_desconto"
+8328	3.45	0.52	2.93	15.07246376811594202900
+8282	6.71	1.01	5.70	15.05216095380029806300
+13421	7.32	1.10	6.22	15.02732240437158469900
+8261	18.04	2.71	15.33	15.02217294900221729500
+13288	19.84	2.98	16.86	15.02016129032258064500
+9109	25.97	3.90	22.07	15.01732768579129765100
+12716	20.38	3.06	17.32	15.01472031403336604500
+13839	3.73	0.56	3.17	15.01340482573726541600
+14190	3.73	0.56	3.17	15.01340482573726541600
+10654	11.06	1.66	9.40	15.00904159132007233300
+*/
