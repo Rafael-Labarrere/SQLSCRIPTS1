@@ -65,27 +65,89 @@ WHERE preco_tabela > 10;
 
 -- Questão 07. Mostre o nome, a marca e o preço de tabela do produto mais caro do catálogo. Em caso de empate no preço, traga o primeiro em ordem alfabética de nome.
 
+SELECT nome_produto, marca, preco_tabela
+FROM dim_produto
+WHERE preco_tabela = (
+    SELECT MAX(preco_tabela)
+    FROM dim_produto
+)
+ORDER BY preco_tabela;
 
+-- R: "Ração para Cães 10kg"	"Premier"	140.29
 
 -- Questão 08. Quantos produtos existem em cada categoria? Ordene da categoria com mais produtos para a com menos; em caso de empate, por nome da categoria (A–Z).
 
+SELECT categoria, COUNT (DISTINCT marca)
+FROM dim_produto
+GROUP BY categoria
+ORDER BY COUNT DESC, categoria;
 
+/*
+R:
+"Mercearia"	21
+"Bebidas"	20
+"Higiene"	16
+"Laticínios"	12
+"Limpeza"	11
+"Padaria"	9
+"Carnes"	7
+"Congelados"	7
+"Pet"	6
+"Hortifruti"	1
+*/
 
 -- Questão 09. Qual é o preço médio de tabela de cada categoria? ordene do maior preço médio para o menor.
 
+SELECT categoria, AVG(preco_tabela)
+FROM dim_produto
+GROUP BY categoria
+ORDER BY AVG(preco_tabela) DESC;
 
+/*
+"Pet"	76.1500000000000000
+"Carnes"	37.8230769230769231
+"Congelados"	33.1800000000000000
+"Higiene"	25.8452941176470588
+"Bebidas"	19.2646153846153846
+"Limpeza"	17.5674074074074074
+"Laticínios"	14.5062500000000000
+"Mercearia"	14.4977551020408163
+"Padaria"	8.2220000000000000
+"Hortifruti"	6.2400000000000000
+*/
 
 -- Questão 10. Quantos clientes há em cada cidade? Mostre apenas as cidades com pelo menos 60 clientes, da maior quantidade para a menor; em caso de empate, por nome da cidade (A–Z).
 
+SELECT cidade, COUNT(*) AS quantidade_clientes
+FROM dim_cliente
+GROUP BY cidade
+HAVING COUNT(*) >= 60
+ORDER BY quantidade_clientes DESC, cidade ASC;
 
+/*
+"Brasília"	245
+"Taguatinga"	92
+"Ceilândia"	81
+"Goiânia"	68
+"Águas Claras"	64
+"Samambaia"	63
+*/
 
 -- Questão 11. Quantos clientes não informaram e-mail?
 
+SELECT COUNT (id_cliente)
+FROM dim_cliente
+WHERE email is NULL;
 
+-- R: 75
 
 -- Questão 12. Quantas clientes do sexo feminino nasceram entre 01/01/1990 e 31/12/1999 ?
 
+SELECT COUNT (id_cliente)
+FROM dim_cliente
+WHERE sexo = 'F' and data_nascimento BETWEEN DATE '01/01/1990' AND DATE '31/12/1999';
 
+-- R: 74
 
 -- Questão 13. Quantos clientes têm Ana como primeiro nome? (Atenção: nomes como Analu ou Anabela não contam.)
 
